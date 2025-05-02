@@ -1,0 +1,31 @@
+RISCV := riscv64-linux-gnu
+
+# get the absolute path of this Makefrag
+MAKEFRAG_PATH := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+LIB_PATH := $(MAKEFRAG_PATH)lib
+LIB_SOURCES := $(wildcard $(LIB_PATH)/*.c)
+CSRCS := $(wildcard *.c)
+SSRCS := $(wildcard *.s)
+LDSRC := $(TARGET).ld
+
+GCC_OPTS += -mabi=ilp32 -march=rv32i -static -mcmodel=medany -nostdlib -nostartfiles -T $(LDSRC)
+
+all: $(TARGET).elf
+
+SOURCES = $(CSRCS) $(SSRCS)
+ifeq ($(INCLUDE_LIB), true)
+	SOURCES += $(LIB_SOURCES)
+endif
+
+# objdump is called before strip because it inlines functions and makes the assembly harder to read
+$(TARGET).elf: $(SOURCES)
+	$(RISCV)-gcc $(GCC_OPTS) -I$(LIB_PATH) $^ -o $@
+	$(RISCV)-objdump -D -Mnumeric $@ > $(basename $@).dump
+	$(RISCV)-strip -R .comment -R .note.gnu.build-id -R .riscv.attributes $@
+	$(RISCV)-objcopy $(basename $@).elf -O binary $(basename $@).bin
+	hexdump -v -e '4/4 "%08x\n" "\n"' $(basename $@).bin > $(basename $@).hex
+
+clean:
+	rm -f *.elf *.dump *.hex *.bin
+
+.PHONY: all clean
