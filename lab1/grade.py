@@ -4,90 +4,40 @@ import sys
 import os
 import subprocess
 
+# Include path to grade_utils
 script_dir = os.path.join(os.path.dirname(__file__), '..', 'scripts')
 sys.path.append(script_dir)
 
 from grade_utils import *
 
+SRC_DIR = os.path.join(os.path.dirname(__file__), 'src')
+
 @test(0, "lint always", critical=True)
 def test_lint_always():
-    # get all the file in src directory
-    src_dir = os.path.join(os.path.dirname(__file__), 'src')
-    files = os.listdir(src_dir)
-    for file in files:
-        lint_always(os.path.join(src_dir, file))
+    for file in os.listdir(SRC_DIR):
+        path = os.path.join(SRC_DIR, file)
+        lint_always(path)
 
-@test(5, "seven_segments")
-def test_seven_segments():
-    result = subprocess.run(
-        ['make', 'tb_seven_segments'],
-        stderr=subprocess.STDOUT,
-        stdout=subprocess.PIPE,
-        text=True)
+def make_test(target, points, title):
+    @test(points, title)
+    def _test():
+        result = subprocess.run(
+            ['make', target],
+            stderr=subprocess.STDOUT,
+            stdout=subprocess.PIPE,
+            text=True
+        )
+        if result.returncode != 0:
+            print(result.stdout)
+            raise AssertionError(f"{target} failed")
+    return _test
 
-    if result.returncode != 0:
-        print(result.stdout)
-        raise AssertionError("tb_seven_segments failed")
 
-@test(5, "counter")
-def test_counter():
-    result = subprocess.run(
-        ['make', 'tb_counter'],
-        stderr=subprocess.STDOUT,
-        stdout=subprocess.PIPE,
-        text=True)
-
-    if result.returncode != 0:
-        print(result.stdout)
-        raise AssertionError("tb_counter failed")
-
-@test(5, "synchronizer")
-def test_synchronizer():
-    result = subprocess.run(
-        ['make', 'tb_synchronizer'],
-        stderr=subprocess.STDOUT,
-        stdout=subprocess.PIPE,
-        text=True)
-    
-    if result.returncode != 0:
-        print(result.stdout)
-        raise AssertionError("tb_synchronizer failed")
-
-@test(5, "debouncer")
-def test_debouncer():
-    result = subprocess.run(
-        ['make', 'tb_debouncer'],
-        stderr=subprocess.STDOUT,
-        stdout=subprocess.PIPE,
-        text=True)
-    
-    if result.returncode != 0:
-        print(result.stdout)
-        raise AssertionError("tb_debouncer failed")
-    
-
-@test(5, "edge_detector")
-def test_edge_detector():
-    result = subprocess.run(
-        ['make', 'tb_edge_detector'],
-        stderr=subprocess.STDOUT,
-        stdout=subprocess.PIPE,
-        text=True)
-    
-    if result.returncode != 0:
-        print(result.stdout)
-        raise AssertionError("tb_edge_detector failed")
-
-@test(20, "top module")
-def test_edge_detector():
-    result = subprocess.run(
-        ['make', 'tb_top'],
-        stderr=subprocess.STDOUT,
-        stdout=subprocess.PIPE,
-        text=True)
-    
-    if result.returncode != 0:
-        print(result.stdout)
-        raise AssertionError("tb_top failed")
+make_test("tb_seven_segments", 5, "seven_segments")
+make_test("tb_counter", 5, "counter")
+make_test("tb_synchronizer", 5, "synchronizer")
+make_test("tb_debouncer", 5, "debouncer")
+make_test("tb_edge_detector", 5, "edge_detector")
+make_test("tb_top", 20, "top module")
 
 run_all_tests()

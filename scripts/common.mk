@@ -35,8 +35,7 @@ VVP                     := vvp
 
 
 grade:
-	@echo $(MAKE) clean
-	@$(MAKE) clean
+	$(MAKE) clean
 	@$(WORK_DIR)/grade.py
 
 $(HANDIN): $(SUBMIT_FILES)

@@ -1,24 +1,42 @@
-import sys, os, re, time
+import sys
+import os
+import re
+import time
 
 __all__ = []
 
 ################################################################################
 
+
+# ------------------------------------------------------------------------------
+# Globals
+# ------------------------------------------------------------------------------
+
+
 TESTS = []
-TOTAL = POSSIBLE = 0
+TOTAL = 0
+POSSIBLE = 0
+
+
+# ------------------------------------------------------------------------------
+# Decorator to register tests
+# ------------------------------------------------------------------------------
+
 
 __all__ += ['test', 'run_all_tests']
 
 def test(points, title=None, critical=False):
-    def register_test(fn, title=title, critical=critical):
-        def run_test():
+    def register(fn):
+        def wrapper():
+            nonlocal points, title, critical
             global TOTAL, POSSIBLE
 
+            title_display = title or fn.__name__
+            sys.stdout.write(f"== Test {title_display} ==\n")
+            sys.stdout.flush()
             fail = None
             start = time.time()
 
-            sys.stdout.write("== Test %s ==\n" % title)
-            sys.stdout.flush()
             try:
                 fn()
             except AssertionError as e:
@@ -26,45 +44,57 @@ def test(points, title=None, critical=False):
 
             POSSIBLE += points
             if points or critical:
-                print("%s: %s" % (title, \
-                    (color("red", "FAIL") if fail else color("green", "OK"))), end=' ')
-            if time.time() - start > 0.1:
-                print("(%.1fs)" % (time.time() - start), end=' ')
+                status = color("red", "FAIL") if fail else color("green", "OK")
+                print(f"{title_display}: {status}", end=' ')
+            elapsed = time.time() - start
+            if elapsed > 0.1:
+                print(f"({elapsed:.1f}s)", end=' ')
             print()
+
             if fail:
-                print("    %s" % fail.replace("\n", "\n    "))
+                print("    " + fail.replace("\n", "\n    "))
             else:
                 TOTAL += points
 
-            run_test.ok = not fail
-            return run_test.ok
+            wrapper.ok = fail is None
+            return wrapper.ok
 
         # Record test metadata on the test wrapper function
-        run_test.__name__ = fn.__name__
-        run_test.title = title
-        run_test.ok = False
-        run_test.critical = critical
-        TESTS.append(run_test)
-        return run_test
-    return register_test
+        wrapper.__name__ = fn.__name__
+        wrapper.title = title or fn.__name__
+        wrapper.ok = False
+        wrapper.critical = critical
 
-        
+        TESTS.append(wrapper)
+        return wrapper
+    return register
+
+
+# ------------------------------------------------------------------------------
+# Test runner
+# ------------------------------------------------------------------------------
+
 
 def run_all_tests():
     try:
-        for test in TESTS:
-            test()
-            if test.critical and not test.ok:
-                print(f"Critical test {test.title} failed")
-                print("Score: 0/%d" % POSSIBLE)
+        for t in TESTS:
+            t()
+            if t.critical and not t.ok:
+                print(f"Critical test {t.title} failed")
+                print(f"Score: 0/{POSSIBLE}")
                 break
-        print("Score: %d/%d" % (TOTAL, POSSIBLE))
+        else: # no break
+            print("Score: %d/%d" % (TOTAL, POSSIBLE))
     except KeyboardInterrupt:
         pass
     if TOTAL < POSSIBLE:
         sys.exit(1)
 
-################################################################################
+
+# ------------------------------------------------------------------------------
+# Lint checker
+# ------------------------------------------------------------------------------
+
 
 __all__ += ['lint_always']
 
@@ -72,16 +102,22 @@ def lint_always(file_path):
     with open(file_path) as f:
         text = f.read()
         
-    # search `always @(posedge/negedge ...)`
     search = re.search(r"always\s+@\s*\((posedge|negedge)\s+", text)
     if search:
         raise AssertionError(
             f"{file_path}: You are not allowed to use `always @(posedge/negedge ...)` in this lab")
     
 
-################################################################################
+# ------------------------------------------------------------------------------
+# Color printer
+# ------------------------------------------------------------------------------
 
-COLORS = {"default": "\033[0m", "red": "\033[31m", "green": "\033[32m"}
+
+_COLORS = {
+    "default": "\033[0m",
+    "red": "\033[31m",
+    "green": "\033[32m",
+}
 
 def color(name, text):
-    return COLORS[name] + text + COLORS["default"]
+    return f"{_COLORS[name]}{text}{_COLORS['default']}"
