@@ -4,12 +4,16 @@ VSRCS := $(shell find src -type f -name '*.sv')
 
 SUBMIT_VSRCS := src/core/alu.sv \
 				src/core/register_file.sv \
-				src/core/immediate_generator.sv
+				src/core/immediate_generator.sv \
+				src/core/controller.sv \
+				src/core/cpu.sv
 
 SUBMIT_FILES := $(SUBMIT_VSRCS) \
 				docs/report.pdf
 
 include ../scripts/common.mk
+
+URL = http://$(SERVER_ADDR)/api/homework/3/submit
 
 IVERILOG_OPTS += -I src/core -I sim # to search verilog headers
 

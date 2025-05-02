@@ -1,6 +1,7 @@
 STUDENT_ID  := 2024000000
 HANDIN      := $(LAB_NAME)-$(STUDENT_ID).zip
-SERVER_ADDR := 10.112.97.234:5000
+SERVER_ADDR := grade.bupt-hpc.cn
+URL         := 
 
 WORK_DIR  := $(shell pwd)
 BUILD_DIR := $(WORK_DIR)/build
@@ -44,7 +45,7 @@ $(HANDIN): $(SUBMIT_FILES)
 tarball: $(HANDIN)
 
 submit: $(HANDIN)
-	curl -F "file=@$(HANDIN)" -F "student_id=$(STUDENT_ID)" http://$(SERVER_ADDR)/api/v1/submit
+	curl -F "file=@$(HANDIN)" -F "student_id=$(STUDENT_ID)" $(URL)
 
 clean:
 	-@rm -rf $(BUILD_DIR) $(HANDIN)

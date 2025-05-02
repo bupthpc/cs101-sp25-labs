@@ -12,6 +12,8 @@ SUBMIT_FILES := $(SUBMIT_VSRCS) \
 
 include ../scripts/common.mk
 
+URL = http://$(SERVER_ADDR)/api/homework/2/submit
+
 .PRECIOUS: build/tb_%.vcd # don't delete .vcd files
 
 tb_%: build/tb_%.vcd

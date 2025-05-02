@@ -13,6 +13,8 @@ SUBMIT_FILES := $(VSRCS) \
 
 include ../scripts/common.mk
 
+URL = http://$(SERVER_ADDR)/api/homework/1/submit
+
 
 tb_seven_segments: build/tb_seven_segments
 	@cd build && ./$@
