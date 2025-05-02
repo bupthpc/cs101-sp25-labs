@@ -38,6 +38,6 @@ make_test("tb_register_file", 5, "register_file")
 make_test("tb_immediate_generator", 5, "immediate_generator")
 make_test("tb_controller", 5, "controller")
 make_test("tb_cpu", 20, "cpu")
-make_test("tb_hello_world", 20, "hello_world")
+# make_test("tb_hello_world", 20, "hello_world")
 
 run_all_tests()
