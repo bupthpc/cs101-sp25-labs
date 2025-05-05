@@ -13,8 +13,6 @@ SUBMIT_FILES := $(SUBMIT_VSRCS) \
 
 include ../scripts/common.mk
 
-URL = http://$(SERVER_ADDR)/api/homework/3/submit
-
 IVERILOG_OPTS += -I src/core -I sim # to search verilog headers
 
 .PRECIOUS: build/tb_%.fst # don't delete .fst files

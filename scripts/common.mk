@@ -1,12 +1,12 @@
-STUDENT_ID  := 2024000000
-HANDIN      := $(LAB_NAME)-$(STUDENT_ID).zip
-SERVER_ADDR := grade.bupt-hpc.cn
-URL         := 
+STUDENT_ID   := your_student_id_here
+SUBMIT_TOKEN := your_token_here
+HANDIN       := $(LAB_NAME)-$(STUDENT_ID).zip
 
 WORK_DIR  := $(shell pwd)
 BUILD_DIR := $(WORK_DIR)/build
 OBJ_DIR   := $(BUILD_DIR)/obj_dir
 
+SCRIPTS_DIR := $(WORK_DIR)/../scripts
 INCLUDE_DIR := $(WORK_DIR)/../include
 
 ifeq ($(VERILATOR_ROOT),)
@@ -45,7 +45,8 @@ $(HANDIN): $(SUBMIT_FILES)
 tarball: $(HANDIN)
 
 submit: $(HANDIN)
-	curl -F "file=@$(HANDIN)" -F "student_id=$(STUDENT_ID)" $(URL)
+	@echo "Submitting $(HANDIN) ..."
+	@$(SCRIPTS_DIR)/submit.py --lab $(LAB_NAME) --token $(SUBMIT_TOKEN) --file $(HANDIN)
 
 clean:
 	-@rm -rf $(BUILD_DIR) $(HANDIN)
