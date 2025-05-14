@@ -8,8 +8,10 @@ SUBMIT_VSRCS := src/core/alu.sv \
 				src/core/controller.sv \
 				src/core/cpu.sv
 
-SUBMIT_FILES := $(SUBMIT_VSRCS) \
-				docs/report.pdf
+# SUBMIT_FILES := $(SUBMIT_VSRCS) \
+# 				docs/report.pdf
+
+SUBMIT_FILES := $(SUBMIT_VSRCS)
 
 include ../scripts/common.mk
 

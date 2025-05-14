@@ -8,8 +8,10 @@ VSRCS := src/seven_segments.sv \
 		 src/edge_detector.sv \
 		 src/top.sv
 
-SUBMIT_FILES := $(VSRCS) \
-				docs/report.pdf
+# SUBMIT_FILES := $(VSRCS) \
+# 				docs/report.pdf
+
+SUBMIT_FILES := $(VSRCS)
 
 include ../scripts/common.mk
 

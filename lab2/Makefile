@@ -7,8 +7,10 @@ SUBMIT_VSRCS := src/fifo.sv \
 				src/uart.sv \
 				src/top.sv
 
-SUBMIT_FILES := $(SUBMIT_VSRCS) \
-				docs/report.pdf
+# SUBMIT_FILES := $(SUBMIT_VSRCS) \
+# 				docs/report.pdf
+
+SUBMIT_FILES := $(SUBMIT_VSRCS)
 
 include ../scripts/common.mk
 
