@@ -2,7 +2,7 @@ module top # (
     parameter CPU_CLOCK_FREQ = 10_000_000, // TODO: try differenct clk freq
     parameter RESET_PC = 32'h4000_0000,
     parameter BAUD_RATE = 9600,
-    parameter PROG_MIF_HEX = "path/to/your/mif.hex",
+    parameter PROG_MIF_HEX = "", // TODO: path/to/your/mif.hex
     parameter FPGA_LED_NUM = 16,
     parameter FPGA_SWITCH_NUM = 16,
     parameter LEDS_BASE_ADDR = 32'h8000_0000,
